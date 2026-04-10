@@ -15,7 +15,6 @@ class Car():
 			except ValueError as ex:
 				print("Don't let empty data, enter only numbers")
 		self.speed = self.speed + amount
-		return 0
 	
 	def activate_break(self):
 		while(True):
@@ -28,12 +27,10 @@ class Car():
 			except ValueError as ex:
 				print("Don't let empty data, enter only numbers")
 		self.speed = self.speed - amount
-		return 0
-
+		
 	def __str__(self):
 		print(f"{self.brand} {self.model} - Speed: {self.speed} km/h")
-		return 0
-
+		
 def get_features():
 	while(True):
 		try:

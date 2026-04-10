@@ -1,9 +1,11 @@
 import math
 
 class Circle():
-    def get_area(self, radius):
-        return math.pi*pow(radius,2)
+    def __init__(self, radius):
+        self.radius = radius
+    def get_area(self):
+        return math.pi*pow(self.radius,2)
     
-circle_one = Circle()
-print(circle_one.get_area(10))
+circle_one = Circle(10)
+print(circle_one.get_area())
 
