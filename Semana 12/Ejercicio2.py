@@ -3,11 +3,11 @@ import math
 
 class Shape(ABC):
     @abstractmethod
-    def calculate_perimeter(self, amount):
+    def calculate_perimeter(self):
         pass
 
     @abstractmethod
-    def calculate_area(self, amount):
+    def calculate_area(self):
         pass
 
 class Circle(Shape):
@@ -16,24 +16,24 @@ class Circle(Shape):
 
     def calculate_perimeter(self):
         perimeter = 2*math.pi*self.radius
-        print(f'Circle perimeter is: {perimeter}')
+        return perimeter
 
     def calculate_area(self):
         area = math.pi*math.pow(self.radius, 2)
-        print(f'Circle area is: {area}')
-
+        return area
+    
 class Square(Shape):
     def __init__(self, side):
         self.side = side
 
     def calculate_perimeter(self):
         perimeter = self.side*4
-        print(f'Square perimeter is: {perimeter}')
-
+        return perimeter
+    
     def calculate_area(self):
         area = self.side*self.side
-        print(f'Square area is: {area}')
-
+        return area
+    
 class Rectangle(Shape):
     def __init__(self, length, width):
         self.length = length
@@ -41,16 +41,17 @@ class Rectangle(Shape):
 
     def calculate_perimeter(self):
         perimeter = 2*self.length + 2*self.width
-        print(f'Rectangle perimeter is: {perimeter}')
-
+        return perimeter
+    
     def calculate_area(self):
         area = self.length*self.width
-        print(f'Rectangle area is:{area}')
+        return area
 
 my_circle = Circle(5)
 my_square = Square(3)
 my_rectangle = Rectangle(4, 5)
 
-my_circle.calculate_area()
-my_rectangle.calculate_perimeter()
-my_square.calculate_area()
+print(f'Circle area is: {my_circle.calculate_area()}')
+print(f'Rectangle perimeter is: {my_rectangle.calculate_perimeter()}')
+print(f'Square area is: {my_square.calculate_area()}')
+
