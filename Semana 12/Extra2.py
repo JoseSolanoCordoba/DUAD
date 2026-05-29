@@ -29,7 +29,7 @@ class AdminUser(User):
 class RegularUser(User):
     def __init__(self, name):
         super().__init__(name)
-        self._access = ("read") 
+        self._access = ("read",) 
 
     def get_role (self):
         return f'Regular'

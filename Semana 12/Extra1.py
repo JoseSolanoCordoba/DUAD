@@ -19,12 +19,12 @@ class Employee:
             print("Salary must be greater than zero")
 
     def promote (self, percentage):
-        self._salary = self._salary*(1+percentage/100)
+        self._salary = self._salary*(1+percentage)
 
 employee1 = Employee("Jose", 500)
 print("Employee name: " + employee1.name)
 print("Employee salary: " + employee1.salary)
-employee1.promote(15)
+employee1.promote(0.15)
 print("New employee salary with promotion: " + employee1.salary)
 employee1.salary = 1000
 print("New employee salary in new company: " + employee1.salary)
