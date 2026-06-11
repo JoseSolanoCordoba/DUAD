@@ -15,9 +15,11 @@ class Binary_Tree():
         self.print_node(self.head)
 
     def print_node(self, Node):
-        if (Node.left_child and Node.right_child) is not None:
-            print(f'Parent ---> {Node.data}: \nLeft_Child ---> {Node.left_child.data}, Right_Child ---> {Node.right_child.data}\n')
+        if Node.left_child is not None:
+            print(f'Parent ---> {Node.data}: Left_Child ---> {Node.left_child.data}\n') 
             self.print_node(Node.left_child)
+        if Node.right_child is not None:
+            print(f'Parent ---> {Node.data}: Right_Child ---> {Node.right_child.data}\n')
             self.print_node(Node.right_child)
         
 
@@ -25,7 +27,7 @@ seventh_node = Node("Soy el séptimo nodo")
 sixth_node = Node("Soy el sexto nodo")
 fifth_node = Node("Soy el quinto nodo")
 fourth_node = Node("Soy el cuarto nodo")
-third_node = Node("Soy el tercer nodo", sixth_node, seventh_node)
+third_node = Node("Soy el tercer nodo", sixth_node)
 second_node = Node("Soy el segundo nodo", fourth_node, fifth_node)
 first_node = Node("Soy el primer nodo", second_node, third_node)
 

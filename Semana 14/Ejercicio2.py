@@ -26,7 +26,7 @@ class Double_Ended_Queue(LinkedList):
         self.head = self.head.next
 
     def push_right(self, new_node):
-        next_node = self.head.next         
+        next_node = self.head         
         while (next_node is not None):
             current_node = next_node
             next_node = current_node.next
