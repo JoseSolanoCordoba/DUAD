@@ -45,7 +45,8 @@ class Double_Queue(LinkedList):
         while (next_node is not None):
             if next_node.data == data:
                 current_node.next = next_node.next
-                current_node.next.previous = current_node
+                if current_node.next is not None:
+                    current_node.next.previous = current_node
                 break
             else:
                 current_node = next_node
