@@ -1,0 +1,7 @@
+﻿1. Bubble Sort: O(n^2)
+2. Others:
+print_numbers_times_2: O (n)
+check_if_lists_have_an_equal: O(n^2)
+print_10_or_less_elements: O(nLog(n))
+generate_list_trios: O(n^3)
+
