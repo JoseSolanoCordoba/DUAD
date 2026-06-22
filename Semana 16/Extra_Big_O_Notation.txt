@@ -1,0 +1,28 @@
+Ejercicio 1.
+¿Cuál es la complejidad de cada versión?
+Versión 1: O(n)
+Versión 2: O(1)
+¿Qué versión usaría si number = 1 000 000 000? ¿Por qué?
+La versión 2 porque no requiere recorrer los números del 1 hasta el 1 000 000 000 y gastando todo ese tiempo como en la versión 1.
+
+Ejercicio 2. Algoritmo de búsqueda.
+Preguntas:
+
+¿Cuál es la complejidad de cada algoritmo?
+Algoritmo 1: O(n)
+Algoritmo 2: O(1)
+
+¿En qué condiciones conviene usar cada uno?
+El algoritmo 1 para listas pequeñas y no necesariamente ordenadas.
+El 2 para listas de cualquier extensión pero, necesariamente ordenadas.
+
+¿Qué pasa si la lista no está ordenada?
+El algoritmo 2 no sería útil porque estaría haciendo una suposición incorrecta al suponer que la lista está ordenada de izquierda a derecha y avanzar según eso.
+
+Ejercicio 3.
+Preguntas:
+¿Cuál es la complejidad temporal?
+O(n^2)
+
+¿Cuanto dura si hay 1 millón de claves?
+Duraría 1 millón * 1 millón de claves.
