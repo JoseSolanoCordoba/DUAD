@@ -10,7 +10,7 @@ Preguntas:
 
 ¿Cuál es la complejidad de cada algoritmo?
 Algoritmo 1: O(n)
-Algoritmo 2: O(1)
+Algoritmo 2: O(Log(n))
 
 ¿En qué condiciones conviene usar cada uno?
 El algoritmo 1 para listas pequeñas y no necesariamente ordenadas.
