@@ -1,56 +1,164 @@
 from logic import *
 from data_storage import *
 import pytest
+from datetime import datetime, date
 
-def test_add_new_data_non_numerical_amount_handling_valueerror():
+
+headings = ["Category_name", "Type", "Amount", "Date"]
+totals_headings = ["Total_Summary", "Amount"]
+
+def test_add_category_entry_with_empty_input_exception_management():
     #Arrange
-    table_data = []
-    values = {'TITLE': 'Gas', 'AMOUNT': '20mil', 'YEAR': '2025', 'MONTH': '12', 'DAY': '10'}
+    data_list = []
+    data_dict = {}
+    totals_list = []
+    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
+    values = {'TITLEINPUT': '', 'COLOR': ''}
     #Act
-    table_data = add_new_data(table_data, values, 'Income')
+    financial_manager.add_category_entry(values)
     #Assert
-    assert table_data == []
+    assert financial_manager.data_list == []
 
-def test_add_new_data_empty_data_input():
+def test_add_category_entry_normal_entry_in_initial_empty_data():
     #Arrange
-    table_data = []
-    values = {'TITLE': '', 'AMOUNT': '', 'YEAR': '', 'MONTH': '', 'DAY': ''}
+    data_list = []
+    data_dict = {}
+    totals_list = []
+    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
+    values = {'TITLEINPUT': 'Gas', 'COLOR': '#008000'}
     #Act
-    table_data = add_new_data(table_data, values, 'Income')
+    financial_manager.add_category_entry(values)
     #Assert
-    assert table_data == []
+    assert financial_manager.data_list == [['Gas', '', '', '']]
+    assert financial_manager.data_dict == {'Gas': [['Gas', '', '', '']]}
+    assert financial_manager.totals_list == [['Income:', 0], ['Outcome:', 0], ['Net Balance:', 0]]
 
-def test_check_title_existence_with_empty_data_table():
+def test_add_category_entry_with_repeated_category():
     #Arrange
-    table_data = []
-    values = {'TITLEINPUT': 'Gas'}
+    data_list = [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]
+    data_dict = {'Gas': [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]}
+    totals_list = [['Income:', 0], ['Outcome:', 2000], ['Net Balance:', -2000]]
+    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
+    values = {'TITLEINPUT': 'Gas', 'COLOR': '#008000'}
     #Act
-    check_title_existence(table_data, values)
+    financial_manager.add_category_entry(values)
     #Assert
-    assert table_data == [[values['TITLEINPUT'],"","",""]]
+    assert financial_manager.data_list == [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]
+    assert financial_manager.data_dict == {'Gas': [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]}
+    assert financial_manager.totals_list == [['Income:', 0], ['Outcome:', 2000], ['Net Balance:', -2000]]
 
-def test_check_title_existence_with_empty_data_input():
+def test_add_movement_entry_with_empty_input_exception_management():
     #Arrange
-    table_data = []
-    values = {'TITLEINPUT': ''}
+    data_list = [['Gas', '', '', '']]
+    data_dict = {'Gas': [['Gas', '', '', '']]}
+    totals_list = [['Income:', 0], ['Outcome:', 0], ['Net Balance:', 0]]
+    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
+    values = {'TITLE': '', 'AMOUNT': '', 'DATE': ''}
     #Act
-    check_title_existence(table_data, values)
+    financial_manager.add_movement_entry("Outcome", values)
     #Assert
-    assert table_data == []
+    assert financial_manager.data_list == [['Gas', '', '', '']]
+    assert financial_manager.data_dict == {'Gas': [['Gas', '', '', '']]}
+    assert financial_manager.totals_list == [['Income:', 0], ['Outcome:', 0], ['Net Balance:', 0]]
 
-def test_update_grand_total_non_numeric_values_imported_file_valueerror():
+def test_add_movement_entry_with_normal_input_existing_category():
     #Arrange
-    table_data = [["Food", "Outcome", '20mil', date.today()],]
+    data_list = [['Gas', '', '', '']]
+    data_dict = {'Gas': [['Gas', '', '', '']]}
+    totals_list = [['Income:', 0], ['Outcome:', 0], ['Net Balance:', 0]]
+    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
+    values = {'TITLE': 'Gas', 'AMOUNT': '4000', 'DATE': '2021/10/12'}
     #Act
-    table_data = update_grand_total(table_data)
+    financial_manager.add_movement_entry("Outcome", values)
     #Assert
-    assert table_data == [["Food", "Outcome", '20mil', date.today()],]
+    assert financial_manager.data_list == [['Gas', '', '', ''], ['Gas', 'Outcome', 4000, date(2021,10,12)]]
+    assert financial_manager.data_dict == {'Gas': [['Gas', '', '', ''], ['Gas', 'Outcome', 4000, date(2021,10,12)]]}
+    assert financial_manager.totals_list == [['Income:', 0], ['Outcome:', 4000], ['Net Balance:', -4000]]
 
-def test_open_file_not_exist():
+def test_add_movement_entry_with_non_previous_existent_category():
     #Arrange
-    file_name = "Finance"
+    data_list = [['Food', '', '', '']]
+    data_dict = {'Food': [['Food', '', '', '']]}
+    totals_list = [['Income:', 0], ['Outcome:', 0], ['Net Balance:', 0]]
+    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
+    values = {'TITLE': 'Gas', 'AMOUNT': '4000', 'DATE': '2021/10/12'}
     #Act
-    data_list = open_file(file_name)
+    financial_manager.add_movement_entry("Outcome", values)
     #Assert
-    assert data_list == []
+    assert financial_manager.data_list == [['Food', '', '', '']]
+    assert financial_manager.data_dict == {'Food': [['Food', '', '', '']]}
+    assert financial_manager.totals_list == [['Income:', 0], ['Outcome:', 0], ['Net Balance:', 0]]
 
+def test_add_movement_entry_with_incorrect_dates_format_exception_management():
+    #Arrange
+    data_list = [['Gas', '', '', '']]
+    data_dict = {'Gas': [['Gas', '', '', '']]}
+    totals_list = [['Income:', 0], ['Outcome:', 0], ['Net Balance:', 0]]
+    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
+    values = {'TITLE': 'Gas', 'AMOUNT': '4000', 'DATE': 'dosmilveinteerwr3r35#&'}
+    #Act
+    financial_manager.add_movement_entry("Outcome", values)
+    #Assert
+    assert financial_manager.data_list == [['Gas', '', '', '']]
+    assert financial_manager.data_dict == {'Gas': [['Gas', '', '', '']]}
+    assert financial_manager.totals_list == [['Income:', 0], ['Outcome:', 0], ['Net Balance:', 0]]
+
+def test_filter_data_with_incorrect_dates_format_exception_management():
+    #Arrange
+    data_list = [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]
+    data_dict = {'Gas': [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]}
+    totals_list = [['Income:', 0], ['Outcome:', 2000], ['Net Balance:', -2000]]
+    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
+    values = {'DATE1': '2021/09/10', 'DATE2': 'dosmilveinteerwr3r35'}
+    #Act
+    financial_manager.filter_data(values)
+    #Assert
+    assert financial_manager.data_list == [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]
+    assert financial_manager.data_dict == {'Gas': [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]}
+    assert financial_manager.totals_list == [['Income:', 0], ['Outcome:', 2000], ['Net Balance:', -2000]]
+
+def test_filter_data_with_future_datesclea_exception_management():
+    #Arrange
+    data_list = [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]
+    data_dict = {'Gas': [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]}
+    totals_list = [['Income:', 0], ['Outcome:', 2000], ['Net Balance:', -2000]]
+    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
+    values = {'DATE1': '2027/09/10', 'DATE2': '2027/10/12'}
+    #Act
+    financial_manager.filter_data(values)
+    #Assert
+    assert financial_manager.data_list == [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]
+    assert financial_manager.data_dict == {'Gas': [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]}
+    assert financial_manager.totals_list == [['Income:', 0], ['Outcome:', 2000], ['Net Balance:', -2000]]
+
+def test_open_file_non_existent_file():
+    #Arrange
+    data_list = [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]
+    data_dict = {'Gas': [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]}
+    totals_list = [['Income:', 0], ['Outcome:', 2000], ['Net Balance:', -2000]]
+    list_of_data, dict_of_data, list_of_totals = open_file("Financial_file", data_list, data_dict, totals_list)
+    #Assert
+    assert list_of_data == data_list
+    assert dict_of_data == data_dict
+    assert list_of_totals == totals_list
+
+def test_read_json_file_non_existent_file():
+    #Arrange
+    colors_dict = {
+    "Gas": "#008000"
+    }
+    #Act
+    dict_of_colors = read_json_file("Config_file", colors_dict)
+    #Assert
+    assert dict_of_colors == colors_dict
+
+def test_assign_saved_colors_normal_data():
+    #Arrange
+    data_list = [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]
+    data_dict = {'Gas': [['Gas', '', '', ''], ['Gas', 'Outcome', '2000', '2021-12-10']]}
+    totals_list = [['Income:', 0], ['Outcome:', 2000], ['Net Balance:', -2000]]
+    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
+    #Act
+    financial_manager.assign_saved_colors(data_dict, True)
+    #Assert
+    assert financial_manager.colors_list == [[0, "#008000", ''], [1, "#008000", '']]

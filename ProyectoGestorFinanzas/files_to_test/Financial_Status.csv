@@ -1,11 +1,7 @@
 Category_name,Type,Amount,Date
 Gas,,,
-Gas,Outcome,2000,2021-12-10
-French,,,
-French,Outcome,4000,2023-10-16
-French,Outcome,3000,2023-04-28
-French,Outcome,3000,2023-10-07
-Total:,,,
-Income:,0,,
-Outcome:,12000,,
-Net Balance:,-12000,,
+Gas,Outcome,4000,2021-10-12
+Total_Summary,Amount
+Income:,0
+Outcome:,4000
+Net Balance:,-4000
