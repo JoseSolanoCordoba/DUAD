@@ -8,19 +8,16 @@ class Category:
     def __init__(self):
         super().__init__()
         self.category_name = ""
+        self.title = ""
+        self.categories_dict = {}
 
     @property
     def capitalized_category(self):
         self.category_name = self.category_name.capitalize()
         return self.category_name
-    
-    def build_category(self):
-        category_string = self.capitalized_category
-        category_entry = [category_string,"","",""]
-        return category_entry
 
     def build_initial_data(self):
-        self.totals_list = [['Income:',0], ['Outcome:',0], ['Net Balance:',0]]
+        self.summary_list = [['Income:',0], ['Outcome:',0], ['Net Balance:',0]]
         
     def add_category_entry(self, values = {}):
         if not values:
@@ -31,17 +28,15 @@ class Category:
             if not category_color:
                 category_color = "#FFFFFF"
             category_string = self.capitalized_category
-            if not self.data_dict and not self.data_list and not self.totals_list:
+            if not self.categories_dict and not self.movements_list and not self.summary_list:
                 self.build_initial_data()
-            if self.data_dict.get(category_string):
+            if category_string in self.categories_dict.keys():
                 inf.show_error_window("ERROR: The category_name you want to add already exists!")
                 return
             else:
-                category_entry = self.build_category()
-                self.data_dict[category_string] = [category_entry]
-                self.data_list.append(category_entry)
+                self.categories_dict[category_string] = []
             self.add_color(category_color, category_string)
-            dst.create_file([self.header] + self.data_list + [self.totals_headings] + self.totals_list, "Financial_Status")
+            dst.create_file([self.header] + self.movements_list + [self.summary_headings] + self.summary_list, "Financial_Status")
         
 class Movement(Category):
     def __init__(self):
@@ -53,7 +48,7 @@ class Movement(Category):
 
     def build_movement_entry(self):
         category = self.capitalized_category
-        movement_entry = [category, self.movement_type, self.amount, self.date]
+        movement_entry = [self.title, , self.category, self.movement_type, self.amount, self.date]
         return movement_entry
 
     def process_movement_data_entry(func):
@@ -61,13 +56,14 @@ class Movement(Category):
             if not values:
                 event, values = inf.add_movement_window(movement_type)
             try:
-                self.category_name = values['TITLE']
+                self.title = values['TITLE']
+                self.category_name = values['CATEGORY']
                 self.amount = int(values['AMOUNT'])
                 temporal_date = values['DATE']
-                if temporal_date == 'yyyy/mm/dd' or temporal_date == '':
+                if temporal_date == 'dd/mm/yyyy' or temporal_date == '':
                     self.date = date.today()
                 else:
-                    self.date = datetime.strptime(values['DATE'], "%Y/%m/%d").date()
+                    self.date = datetime.strptime(values['DATE'], "%d/%m/%Y").date()
                 if not self.category_name and self.amount and self.date:
                     raise Exception
             except ValueError:
@@ -84,12 +80,12 @@ class Movement(Category):
         self.movement_type = movement_type
         movement_entry = self.build_movement_entry()
         try:
-            if self.category_name in self.data_dict.keys():
-                self.data_dict[self.category_name].append(movement_entry)
-                self.update_data_list()
-                self.assign_saved_colors(self.data_dict)
-                self.update_net_balance(self.data_list)
-                dst.create_file([self.header] + self.data_list + [self.totals_headings] + self.totals_list, "Financial_Status")
+            if self.category_name in self.categories_dict:
+                self.categories_dict[self.category_name].append(movement_entry)
+                self.update_movements_list()
+                self.assign_saved_colors(self.categories_dict)
+                self.update_net_balance(self.movements_list)
+                dst.create_file([self.header] + self.movements_list + [self.summary_headings] + self.summary_list, "Financial_Status")
             else:
                 raise Exception
         except Exception:
@@ -105,12 +101,11 @@ class Table_Colors():
         self.colors_dict = {}
         self.colors_list = []
 
-    def add_color(self, color, key = ''):
-        if key:
-            self.colors_dict[key] = color
+    def add_color(self, color, key_category = ''):
+        if key_category:
+            self.colors_dict[key_category] = color
             dst.create_json(self.colors_dict)
-        self.assign_saved_colors(self.data_dict)
-    
+
     def create_colors_tuples_list(self, temp_color_list, filter_action = False):
         if not filter_action:
             self.colors_list = []
@@ -121,15 +116,18 @@ class Table_Colors():
         for index, color in enumerate(temp_color_list):
             self.filter_colors_list.append([index, color, ''])
 
-    def assign_saved_colors(self, data_dict, opening_file = False, filter_action = False):
+    def assign_saved_colors(self, category_dict, opening_file = False, filter_action = False):
         if opening_file:
             self.colors_dict = dst.read_json_file("Colors_Config", self.colors_dict)
         temporal_colors_list = []
-        if data_dict and self.colors_dict:
-            for key in data_dict.keys():
-                if key in self.colors_dict.keys():
-                    number_of_items = len(data_dict[key])
-                    temporal_colors_list.extend([self.colors_dict.get(key)]*number_of_items)
+        if category_dict and self.colors_dict:
+            for key_title in category_dict.keys():
+                if key_title in self.colors_dict.keys():
+                    number_of_items = len(category_dict.get(key_title))
+                    temporal_colors_list.extend([self.colors_dict.get(key_title)]*number_of_items)
+                else: 
+                    number_of_items = len(category_dict.get(key_title))
+                    temporal_colors_list.extend(["#FFFFFF"]*number_of_items)
             self.create_colors_tuples_list(temporal_colors_list, filter_action)
 
 class Filter(Table_Colors):
@@ -137,13 +135,13 @@ class Filter(Table_Colors):
         super().__init__()
         self.date1 = ""
         self.date2 = ""
-        self.filter_data_list = []
+        self.filter_movements_list = []
         self.filter_colors_list = []
         self.filter_dict = {}
-        self.filter_totals_list = []
+        self.filter_summary_list = []
 
     def create_filter_dictionary(self):
-        for row in self.filter_data_list:
+        for row in self.filter_movements_list:
             if self.filter_dict.get(row[0]):
                 self.filter_dict[row[0]].append(row)
             else:
@@ -152,8 +150,8 @@ class Filter(Table_Colors):
     def validate_filter_dates_entry(func):
         def wrapper(self, values):
             try:
-                date1 = datetime.strptime(values['DATE1'], "%Y/%m/%d").date()
-                date2 = datetime.strptime(values['DATE2'], "%Y/%m/%d").date()
+                date1 = datetime.strptime(values['DATE1'], "%d/%m/%Y").date()
+                date2 = datetime.strptime(values['DATE2'], "%d/%m/%Y").date()
                 if (date1 > date.today()) or (date2 > date.today()):
                     raise Exception
                 elif date2 < date1:
@@ -163,32 +161,32 @@ class Filter(Table_Colors):
                 values = {'DATE1': date1, 'DATE2': date2}
             except ValueError:
                 inf.show_error_window("Enter dates in format yyyy/mm/dd")
-                return self.data_list, self.totals_list, self.colors_list
+                return self.movements_list, self.summary_list, self.colors_list
             except Exception:
                 inf.show_error_window("Do not use future dates!")
-                return self.data_list, self.totals_list, self.colors_list
+                return self.movements_list, self.summary_list, self.colors_list
             return func(self, values)
         return wrapper
 
     @validate_filter_dates_entry
     def filter_data(self, values):
-        data_list = self.data_list
+        movements_list = self.movements_list
         self.date1 = values['DATE1']
         self.date2 = values['DATE2']
 
-        if self.date1 and self.date2 and data_list:
-            for row in range(0 , len(data_list)):
-                row_date = data_list[row][3]
+        if self.date1 and self.date2 and movements_list:
+            for row in range(0 , len(movements_list)):
+                row_date = movements_list[row][3]
                 if row_date == '':
                     continue
                 else:
                     row_date = datetime.strptime(row_date, "%Y-%m-%d").date()
                     if row_date >= self.date1 and row_date <= self.date2:
-                        self.filter_data_list.append(data_list[row])
+                        self.filter_movements_list.append(movements_list[row])
             self.create_filter_dictionary()
             self.assign_saved_colors(self.filter_dict, filter_action = True)
-            self.update_net_balance(self.filter_data_list, True)
-            return self.filter_data_list, self.filter_totals_list, self.filter_colors_list
+            self.update_net_balance(self.filter_movements_list, True)
+            return self.filter_movements_list, self.filter_summary_list, self.filter_colors_list
 
 class Actions_Menu_Management(Movement, Filter):
     def __init__(self):
@@ -204,55 +202,55 @@ class Actions_Menu_Management(Movement, Filter):
         elif event == 'Filter':
             return self.filter_data(values)
         elif event == 'Clear Filter':
-            self.filter_data_list = []
+            self.filter_movements_list = []
             self.filter_colors_list = []
             self.filter_dict = {}
         elif event == 'Export File':
-            dst.create_file([self.header] + self.data_list + [self.totals_headings] + self.totals_list)
+            dst.create_file([self.header] + self.movements_list + [self.totals_headings] + self.summary_list)
         elif event == 'Import File':
-            dst.create_file([self.header] + self.data_list + [self.totals_headings] + self.totals_list, "Backup_file")
-            self.data_list, self.data_dict, self.totals_list = dst.open_file(input_list = self.data_list, input_dict= self.data_dict, input_totals_list = self.totals_list)
-            self.assign_saved_colors(self.data_dict)
-        return self.data_list, self.totals_list, self.colors_list
+            dst.create_file([self.header] + self.movements_list + [self.totals_headings] + self.summary_list, "Backup_file")
+            self.movements_list, self.categories_dict, self.summary_list = dst.open_file(input_list = self.movements_list, input_dict= self.categories_dict, input_summary_list = self.summary_list)
+            self.assign_saved_colors(self.categories_dict)
+        return self.movements_list, self.summary_list, self.colors_list
 
 class FinancialManager(Actions_Menu_Management):
-    def __init__(self, header, data_list, data_dict, totals_headings, totals_data_list):
+    def __init__(self, header, categories_dict, movements_list, summary_headings, summary_list):
         super().__init__()
         self.header = header
-        self.data_dict = data_dict
-        self.data_list = data_list
-        self.totals_headings = totals_headings
-        self.totals_list = totals_data_list
+        self.categories_dict = categories_dict
+        self.movements_list = movements_list
+        self.summary_headings = summary_headings
+        self.summary_list = summary_list
 
-    def update_data_list(self):
-        if self.data_dict:
-            self.data_list = list(itertools.chain.from_iterable(self.data_dict.values()))
+    def update_movements_list(self):
+        if self.categories_dict:
+            self.movements_list = list(itertools.chain.from_iterable(self.categories_dict.values()))
 
-    def update_net_balance(self, data_list, filter_action = False):
+    def update_net_balance(self, movements_list, filter_action = False):
         total_income = 0
         total_outcome = 0
         try:
-            for row in range(0 , len(data_list)):
-                category = data_list[row][1]
+            for row in range(0 , len(movements_list)):
+                category = movements_list[row][1]
                 if category == 'Income':
-                    total_income += int(data_list[row][2])
+                    total_income += int(movements_list[row][2])
                 elif category == 'Outcome':
-                    total_outcome += int(data_list[row][2])
+                    total_outcome += int(movements_list[row][2])
             if not filter_action:
-                self.totals_list = []
-                self.totals_list = [['Income:', total_income], ['Outcome:', total_outcome], ['Net Balance:', total_income - total_outcome]]
+                self.summary_list = []
+                self.summary_list = [['Income:', total_income], ['Outcome:', total_outcome], ['Net Balance:', total_income - total_outcome]]
             else:
-                self.filter_totals_list = []
-                self.filter_totals_list = [['Income:', total_income], ['Outcome:', total_outcome], ['Net Balance:', total_income - total_outcome]]
+                self.filter_summary_list = []
+                self.filter_summary_list = [['Income:', total_income], ['Outcome:', total_outcome], ['Net Balance:', total_income - total_outcome]]
         except ValueError:
             inf.show_error_window("Grand Total could not be updated, non numeric values present, correct file and import again.")
 
 def main():
     headings = ["Category_name", "Type", "Amount", "Date"]
-    totals_headings = ["Total_Summary", "Amount"]
-    data_list, data_dict, totals_list = dst.open_file(file_name = "Financial_Status")
-    financial_manager = FinancialManager(headings, data_list, data_dict, totals_headings, totals_list)
-    financial_manager.assign_saved_colors(data_dict, True)
+    summary_headings = ["Total_Summary", "Amount"]
+    categories_dict, movements_list, summary_list = dst.open_file(file_name = "Financial_Status")
+    financial_manager = FinancialManager(headings, categories_dict, movements_list, summary_headings, summary_list)
+    financial_manager.assign_saved_colors(categories_dict, True)
 
     inf.show_main_window(financial_manager)
 

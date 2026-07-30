@@ -1,7 +1,9 @@
 Category_name,Type,Amount,Date
-Gas,,,
-Gas,Outcome,4000,2021-10-12
+Gas,Outcome,2000,2019-08-17
+Gas,Income,4000,2023-10-05
+Swimming,Outcome,1200,2018-03-16
+Swimming,Income,3000,2021-05-03
 Total_Summary,Amount
-Income:,0
-Outcome:,4000
-Net Balance:,-4000
+Income:,7000
+Outcome:,3200
+Net Balance:,3800

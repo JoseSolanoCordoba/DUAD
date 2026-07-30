@@ -1,4 +1,4 @@
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 import logic as lg
 import data_storage as dst
 
@@ -15,10 +15,12 @@ def add_category_name_window():
 def add_movement_window(window_title):
     add_income_outcome_layout = [[sg.Text("Enter the title:")],
                     [sg.Input(size = (15), key = 'TITLE')],
-                    [sg.Text("Enter the amount:")],
+                    [sg.Text("Enter the category:")],
+                    [sg.Input(size = (15), key = 'CATEGORY')],
+                    [sg.Text("Enter amount:")],
                     [sg.Input(size = (15), key = 'AMOUNT')],
                     [sg.Text("Enter Date:")],
-                    [sg.Input("yyyy/mm/dd", size = (10), key = 'DATE'), sg.Text("(Optional)")],
+                    [sg.Input("dd/mm/yyyy", size = (10), key = 'DATE'), sg.Text("(Optional)")],
                     [sg.Button('Ok')]]
     add_movement_window = sg.Window(window_title, add_income_outcome_layout)
     event, values = add_movement_window.read()
@@ -42,14 +44,14 @@ def show_error_window(error_message):
     
 def show_main_window(financial_object):
     main_layout = [[sg.Text("Date Filter:"),
-                    sg.Input("From: yyyy/mm/dd", size = (16), key = 'DATE1'),
-                    sg.Input("To: yyyy/mm/dd", size = (14), key = 'DATE2'),
+                    sg.Input("From: dd/mm/yyyy", size = (16), key = 'DATE1'),
+                    sg.Input("To: dd/mm/yyyy", size = (14), key = 'DATE2'),
                     sg.Button('Filter'), sg.Button('Clear Filter')], 
-                    [sg.Table(values = financial_object.data_list, headings = financial_object.header,
+                    [sg.Table(values = financial_object.movements_list, headings = financial_object.header,
                     row_colors = financial_object.colors_list, 
                     auto_size_columns = False, col_widths=(20, 10, 10, 10),  justification='left',
                     key = 'ROW_TABLE')],
-                    [sg.Table(values = financial_object.totals_list, headings = financial_object.totals_headings,
+                    [sg.Table(values = financial_object.summary_list, headings = financial_object.summary_headings,
                     row_colors = [(0, '#FFD700', '#FFFFFF' ), (1, '#FFD700', '#FFFFFF' ), (2, '#FFD700', '#FFFFFF' )], 
                     auto_size_columns = False, col_widths=(20, 10, 10, 10),  justification='left',
                     key = 'TOTALS_TABLE')],
@@ -62,7 +64,7 @@ def show_main_window(financial_object):
     while True:
         event, values = main_window.read()
         if event == sg.WINDOW_CLOSED or event == 'Quit':
-            dst.create_file([financial_object.header] + financial_object.data_list + [financial_object.totals_headings] + financial_object.totals_list, "Financial_Status")
+            dst.create_file([financial_object.header] + financial_object.movements_list + [financial_object.summary_headings] + financial_object.summary_list, "Financial_Status")
             break
         elif event and values:
             main_window.hide()
