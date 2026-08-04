@@ -1,0 +1,6 @@
+Date,Title,Amount,Category,Type
+2026-08-03,Gas and oil,40000,Transport,Outcome
+Total_Summary,Amount
+Income,0
+Outcome,40000
+NET_BALANCE,-40000
