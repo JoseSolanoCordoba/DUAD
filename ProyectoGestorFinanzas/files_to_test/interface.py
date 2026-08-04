@@ -2,6 +2,8 @@ import FreeSimpleGUI as sg
 import logic as lg
 import data_storage as dst
 
+SUMMARY_ROW_COLORS = [(0, '#FFD700', '#FFFFFF' ), (1, '#FFD700', '#FFFFFF' ), (2, '#FFD700', '#FFFFFF' )]
+
 def add_category_name_window():
     add_title_layout = [[sg.Text("Enter the new category to add:")],
                     [sg.Input(key = 'CATEGORYINPUT')],
@@ -68,11 +70,11 @@ def show_main_window(financial_object):
             break
         elif event and values:
             main_window.hide()
-            data_to_show, totals_data, colors_to_show = financial_object.actions_management(event, values)
-            main_window['ROW_TABLE'].update(values = data_to_show,  row_colors = colors_to_show)
-            totals_row_colors = [(0, '#FFD700', '#FFFFFF' ), (1, '#FFD700', '#FFFFFF' ), (2, '#FFD700', '#FFFFFF' )]
-            main_window['TOTALS_TABLE'].update(values = totals_data, row_colors = totals_row_colors)
 
+            data_to_show, totals_data, colors_to_show = financial_object.actions_management(event, values)
+
+            main_window['ROW_TABLE'].update(values = data_to_show,  row_colors = colors_to_show)
+            main_window['TOTALS_TABLE'].update(values = totals_data, row_colors = SUMMARY_ROW_COLORS)
             main_window.un_hide()
     main_window.close()
 

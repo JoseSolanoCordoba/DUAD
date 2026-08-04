@@ -1,7 +1,7 @@
 from datetime import datetime, date
 import itertools
-import interface as inf
 import data_storage as dst
+import interface as inf
 
 FILE_NAME = "Financial_Status.csv"
 COLORS_CONFIG = "Colors_Config.json"
@@ -10,6 +10,8 @@ OUTCOME = "Outcome"
 ADD_INCOME = "Add " + INCOME
 ADD_OUTCOME = "Add " + OUTCOME
 NET_BALANCE = "NET_BALANCE"
+HEADINGS = ["Date", "Title", "Amount", "Category", "Type"]
+SUMMARY_HEADINGS = ["Total_Summary", "Amount"]
 
 class Category():
     def __init__(self):
@@ -200,11 +202,11 @@ class Filter():
             return True
 
 class FinancialManager():
-    def __init__(self, header, categories_dict, movements_list, summary_headings, summary_list):
-        self.header = header
+    def __init__(self, categories_dict, movements_list, summary_list):
+        self.header = HEADINGS
         self.categories_dict = categories_dict
         self.movements_list = movements_list
-        self.summary_headings = summary_headings
+        self.summary_headings = SUMMARY_HEADINGS
         self.summary_list = summary_list
         self.category_object = Category()
         self.movement_object = Movement()
@@ -274,10 +276,8 @@ class FinancialManager():
             inf.show_error_window("Grand Total could not be updated, non numeric values present, correct file and import again.")
 
 def main():
-    headings = ["Date", "Title", "Amount", "Category", "Type"]
-    summary_headings = ["Total_Summary", "Amount"]
     categories_dict, movements_list, summary_list = dst.open_file(file_name = FILE_NAME)
-    financial_manager = FinancialManager(headings, categories_dict, movements_list, summary_headings, summary_list)
+    financial_manager = FinancialManager(categories_dict, movements_list, summary_list)
     financial_manager.colors_object.assign_saved_colors(categories_dict, True)
 
     inf.show_main_window(financial_manager)
