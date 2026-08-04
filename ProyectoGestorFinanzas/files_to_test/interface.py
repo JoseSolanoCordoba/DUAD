@@ -3,8 +3,8 @@ import logic as lg
 import data_storage as dst
 
 def add_category_name_window():
-    add_title_layout = [[sg.Text("Enter the new title to add:")],
-                    [sg.Input(key = 'TITLEINPUT')],
+    add_title_layout = [[sg.Text("Enter the new category to add:")],
+                    [sg.Input(key = 'CATEGORYINPUT')],
                     [sg.Input(visible = False, key = 'COLOR'), sg.ColorChooserButton("Choose Category Color"), sg.Text("(Optional)")],
                     [sg.Button('Ok')]]
     add_title_window = sg.Window('Adding New Title', add_title_layout)
@@ -27,11 +27,11 @@ def add_movement_window(window_title):
     add_movement_window.close()
     return event, values
 
-def show_import_file_window():
+def show_import_export_file_window(Action):
     import_file_layout = [[sg.Text("Enter the file name:")],
                     [sg.Input(key = 'FILENAME')],
                     [sg.Button('Ok')]]
-    import_file_window = sg.Window('Opening File', import_file_layout)
+    import_file_window = sg.Window(Action, import_file_layout)
     event, values = import_file_window.read()
     import_file_window.close()
     return event, values
@@ -48,15 +48,15 @@ def show_main_window(financial_object):
                     sg.Input("To: dd/mm/yyyy", size = (14), key = 'DATE2'),
                     sg.Button('Filter'), sg.Button('Clear Filter')], 
                     [sg.Table(values = financial_object.movements_list, headings = financial_object.header,
-                    row_colors = financial_object.colors_list, 
-                    auto_size_columns = False, col_widths=(20, 10, 10, 10),  justification='left',
+                    row_colors = financial_object.colors_object.colors_list, 
+                    auto_size_columns = False, col_widths=(10, 20, 10, 10, 10),  justification='left',
                     key = 'ROW_TABLE')],
                     [sg.Table(values = financial_object.summary_list, headings = financial_object.summary_headings,
                     row_colors = [(0, '#FFD700', '#FFFFFF' ), (1, '#FFD700', '#FFFFFF' ), (2, '#FFD700', '#FFFFFF' )], 
                     auto_size_columns = False, col_widths=(20, 10, 10, 10),  justification='left',
                     key = 'TOTALS_TABLE')],
-                    [sg.Button('Add New Title'), sg.Button('Add Income'),
-                    sg.Button('Add Outcome'), sg.Button('Export File'), sg.Button('Import File')],
+                    [sg.Button('Add New Category'), sg.Button(lg.ADD_INCOME),
+                    sg.Button(lg.ADD_OUTCOME), sg.Button('Export File'), sg.Button('Import File')],
                     [sg.Button('Quit')],]
     
     main_window = sg.Window('Financial Manager', main_layout)
@@ -64,7 +64,7 @@ def show_main_window(financial_object):
     while True:
         event, values = main_window.read()
         if event == sg.WINDOW_CLOSED or event == 'Quit':
-            dst.create_file([financial_object.header] + financial_object.movements_list + [financial_object.summary_headings] + financial_object.summary_list, "Financial_Status")
+            dst.create_file([financial_object.header] + financial_object.movements_list + [financial_object.summary_headings] + financial_object.summary_list, lg.FILE_NAME)
             break
         elif event and values:
             main_window.hide()

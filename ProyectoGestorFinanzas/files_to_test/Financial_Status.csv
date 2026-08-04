@@ -1,9 +1,6 @@
-Category_name,Type,Amount,Date
-Gas,Outcome,2000,2019-08-17
-Gas,Income,4000,2023-10-05
-Swimming,Outcome,1200,2018-03-16
-Swimming,Income,3000,2021-05-03
+Date,Title,Amount,Category,Type
+2026-08-03,Gas and oil,40000,Transport,Outcome
 Total_Summary,Amount
-Income:,7000
-Outcome:,3200
-Net Balance:,3800
+Income,0
+Outcome,40000
+NET_BALANCE,-40000
