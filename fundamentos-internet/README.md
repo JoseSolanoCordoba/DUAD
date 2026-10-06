@@ -18,6 +18,7 @@ y siempre con sus respectivos Headers.
 En resumen, la comunicación se daría mediante un API que se comunica siguiente fielmente el protocolo HTTP en este caso hipotético.
 ##
  3. REST vs SOAP vs GraphQL
+ 
 | Tipo de API | Formato de datos usado |  Nivel de flexibilidad |  Dificultad de implementación |  Uso actual (Alta / Media / Baja) |
 |-------------|------------------------|------------------------|-------------------------------|-----------------------------------|
 |REST         |         JSON           |         ALTO           |        MEDIA  (Nota 1)        |              ALTO                 |
