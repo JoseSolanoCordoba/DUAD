@@ -12,7 +12,18 @@ El HTTP o hyper text transfer protocol se mueve detras de cada interacción entr
  2. Frontend y Backend en acción
 2.1 Frontend: interfaz de usuario, que incluiría calendarios visibles, disponibilidad y demás.
 	Backend: toda la lógica que se mueve sin necesariamente ser vista por el usuario; base de datos, autenticación, y todo el flujo de control que hace posible la app.
-2.2 Para el frontend javascript, java(con librerías), python(con librerías), para el backend python, java, C#...
+2.2 Tecnologías utilizadas.
+
+Frontend:
+1. React: Librería de JavaScript, la más popular en la industria
+2. Vue.js: Framework de JavaScript, intuitivo y fácil de integrar.
+3. Tailwind CSS. Framework de CSS, diseño rápido directamente en el HTML/JSX.
+
+Backend:
+1. Express.js: para construir API REST de forma rápida usando JavaScript en el servidor.
+2. FastAPI: Framework de Python moderno y de alto rendimiento.
+3. PostgreSQL: para el manejo de datos que realizaría el Backend.
+
 2.3 El frontend haría request al backend esperando un response de acuerdo al tipo de operación enviada utilizando el protocolo HTTP (PUT, DELETE, GET...) con un body o sin él, 
 y siempre con sus respectivos Headers. 
 En resumen, la comunicación se daría mediante un API que se comunica siguiente fielmente el protocolo HTTP en este caso hipotético.
@@ -49,17 +60,27 @@ REST API, porque es la más utilizada en la industria y fácil de implementar de
 ###
  4.3 Ejecución y análisis
 
-|       Solicitud       | Método |                   Endpoint                                | Código de estado |  Notas              |
-|-----------------------|--------|-----------------------------------------------------------|------------------|---------------------|
-|Obtener data de Pokémon|  GET   | https://pokeapi.co/api/v2/pokemon/4/                      |     200 OK       | Exitoso             |
-|    Delete Pokémon     | DELETE | https://pokeapi.co/api/v2/pokemon-species/?name=pidgeotto |  403 Forbidden   | Acceso no autorizado|
-|    Skills Pokémon     |  GET   | https://pokeapi.co/api/v2/ability/94/                     |     200 OK       | Exitoso             |
+**PokéAPI**
+|       Solicitud       | Método |                   Endpoint                                 |                   Header                      | Código de estado |  Notas              |
+|-----------------------|--------|------------------------------------------------------------|-----------------------------------------------|------------------|---------------------|
+|Obtener data de Pokémon|  GET   | https://pokeapi.co/api/v2/pokemon/4/                       | Content-Type: application/json; charset=utf-8 |     200 OK       | Exitoso             |
+|    Delete Pokémon     | DELETE | https://pokeapi.co/api/v2/pokemon-species/?name=pidgeotto  |      text/html; charset=UTF-8                 |  403 Forbidden   | Acceso no autorizado|
 
-
+**jsonplaceholderAPI
+|       Solicitud       | Método |                   Endpoint                                 |                   Header                      | Código de estado |  Notas              |
+|-----------------------|--------|------------------------------------------------------------|-----------------------------------------------|------------------|---------------------|
+|Post new data          |  POST  | https://jsonplaceholder.typicode.com/posts/                | Content-Type: application/json; charset=utf-8 |    201 Created   | Exitoso             |
+Body:
+{
+    "title": "Useful information",
+    "body": "This is the useful information",
+    "userId": 5
+}
 
 ###
  4.4 Explicación técnica
-
+La primera API PokeAPI tiene todos los datos de los Pokémon, es de solo lectura.
+La segunda API permite hacer todos los métodos principales, no solamente el método GET. Con random data.
 ####
  [Obtener data de Pokémon]
 
@@ -94,23 +115,42 @@ Respuesta fallida 403 Forbidden.
 
 **¿Qué aprendiste del proceso?**
 A realizar request usando query parameters y que el request es correcto, el servidor lo entendió pero, no está permitida la acción de DELETE en este caso específico.
+Analizando más a fonde se ve que:
+Content-Type: text/html; charset=UTF-8
+Server: cloudflare
+Y en el body se nota que existe la misma información en las primeras líneas:
+<head>
+    <title>Attention Required! | Cloudflare</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
- [See Pokemon Skills]
+Investigando más vi que realmente lo respondió Cloudflare, una capa de seguridad previa no la API de PokeAPI. Y tiene sentido el tipo de Content-Type recibido, puesto que el body realmente es HTML no json.
+Si la solicitud hubiese llegado a la API, el response para un método no soportado por un Endpoint debería haber sido: 405 Method Not Allowed y suele incluir un header Allow: GET, HEAD que específica los métodos permitidos.
+El 403 Forbidden es la prohibición que hace Cloudflare para proteger, bloquear y no permitir que la solicitud alcance el API.
+Esto se llama WAF (Web Application Firewall).
+
+ [Post new data]
 
 - **Método HTTP:**
-GET
+POST
 - **Endpoint:**
-https://pokeapi.co/api/v2/ability/94/
+https://jsonplaceholder.typicode.com/posts/ 
 
 - **Parámetros / body:**
-Path parameter: ability: 94
+Body:
+{
+    "title": "Useful information",
+    "body": "This is the useful information",
+    "userId": 5
+}
+
 
 - **Descripción de la respuesta:**
-Respuesta exitosa 200. Response obtenido para la ability 94.
+Respuesta exitosa 201 Created. Se creó el nuevo recurso con éxito.
 
 **¿Qué aprendiste del proceso?**
-Qué dentro de un mismo endpoint con características específicas existen otros endpoints. Y dichos endpoints pueden ser consultados de igual forma.
-
+El server se encarga de asignar un ID automáticamente para asegurarse que no se repitan IDs.
+Y aprendí un nuevo status code más específico: 201 Created.
 ###
  4.5 Reflexión final
  

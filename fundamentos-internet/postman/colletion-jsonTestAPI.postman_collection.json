@@ -1,0 +1,149 @@
+{
+  "info": {
+    "_postman_id": "ab8305ea-c84f-4465-9828-982d342e6fc9",
+    "name": "jsonTestAPI",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58386058",
+    "_collection_link": "https://go.postman.co/collection/58386058-ab8305ea-c84f-4465-9828-982d342e6fc9?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Post new data",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": [
+        {
+          "name": "Post new data",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Useful information\",\r\n    \"body\": \"This is the useful information\",\r\n    \"userId\": 5\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://jsonplaceholder.typicode.com/posts/",
+              "protocol": "https",
+              "host": [
+                "jsonplaceholder",
+                "typicode",
+                "com"
+              ],
+              "path": [
+                "posts",
+                ""
+              ]
+            }
+          },
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": ":status",
+              "value": "201"
+            },
+            {
+              "key": "date",
+              "value": "Wed, 07 Oct 2026 01:45:25 GMT"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "content-length",
+              "value": "107"
+            },
+            {
+              "key": "location",
+              "value": "https://jsonplaceholder.typicode.com/posts//101"
+            },
+            {
+              "key": "access-control-allow-credentials",
+              "value": "true"
+            },
+            {
+              "key": "access-control-expose-headers",
+              "value": "Location"
+            },
+            {
+              "key": "cache-control",
+              "value": "no-cache"
+            },
+            {
+              "key": "etag",
+              "value": "W/\"6b-wfDMi+PCOHG4PsqF5rlejQTBGww\""
+            },
+            {
+              "key": "expires",
+              "value": "-1"
+            },
+            {
+              "key": "pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "vary",
+              "value": "Origin, X-HTTP-Method-Override, Accept-Encoding"
+            },
+            {
+              "key": "x-content-type-options",
+              "value": "nosniff"
+            },
+            {
+              "key": "x-powered-by",
+              "value": "Express"
+            },
+            {
+              "key": "x-ratelimit-limit",
+              "value": "3600000"
+            },
+            {
+              "key": "x-ratelimit-remaining",
+              "value": "3599996"
+            },
+            {
+              "key": "x-ratelimit-reset",
+              "value": "1791339535"
+            },
+            {
+              "key": "cf-cache-status",
+              "value": "DYNAMIC"
+            },
+            {
+              "key": "report-to",
+              "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=kmj1bjlY9LtHZaGVYim3MMz7yjYb7qDD91agXG7Sx0Z%2BXMkmzfx4Tn%2FrTwyhVnLo8hFqKPq8lS1uyNfjYxcbKtB53aD0UV7oQScKHuekVtspFfYikHr2X2b4wnsYfhIUtYQRQdXJczqOaNstxvuk\"}]}"
+            },
+            {
+              "key": "nel",
+              "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+            },
+            {
+              "key": "server",
+              "value": "cloudflare"
+            },
+            {
+              "key": "cf-ray",
+              "value": "a46939f0bbc0a71b-SJO"
+            },
+            {
+              "key": "alt-svc",
+              "value": "h3=\":443\"; ma=86400"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"title\": \"Useful information\",\n  \"body\": \"This is the useful information\",\n  \"userId\": 5,\n  \"id\": 101\n}"
+        }
+      ]
+    }
+  ]
+}
