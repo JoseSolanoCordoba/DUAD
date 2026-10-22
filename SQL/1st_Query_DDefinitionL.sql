@@ -4,7 +4,7 @@ CREATE TABLE Invoices(
     user_id INTEGER REFERENCES Users(id),
     purchase_date TIMESTAMP NOT NULL,
     total_amount DECIMAL(8, 2) NOT NULL,
-    method_id REFERENCES Payment_Methods(id)
+    method_id INTEGER REFERENCES Payment_Methods(id)
 );
 CREATE TABLE Products_per_Invoice(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,6 +23,8 @@ CREATE TABLE Products(
     stock_available INTEGER DEFAULT 0
 );
 CREATE TABLE Shopping_Cart_Products(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES Users(id),
     buyer_email VARCHAR(25) NOT NULL,
     product_id INTEGER REFERENCES Products(id),
     quantity INTEGER NOT NULL
@@ -38,7 +40,7 @@ CREATE TABLE Reviews(
     user_id INTEGER REFERENCES Users(id),
     product_id INTEGER REFERENCES Products(id),
     comment TEXT NOT NULL,
-    rating SMALLINTEGER NOT NULL,
+    rating SMALLINT CHECK (rating <= 5 AND rating >=0) DEFAULT 0,
     date DATE NOT NULL
 );
 CREATE TABLE Payment_Methods(

@@ -1,4 +1,4 @@
 -- SQLite
 SELECT *
 FROM Products
-WHERE price >= 50000
+WHERE price > 50000
