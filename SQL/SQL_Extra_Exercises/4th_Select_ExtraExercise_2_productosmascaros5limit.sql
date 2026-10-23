@@ -1,0 +1,4 @@
+-- SQLite
+SELECT *
+FROM Products
+ORDER BY price DESC LIMIT 5;
