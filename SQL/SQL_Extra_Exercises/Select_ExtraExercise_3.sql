@@ -1,0 +1,4 @@
+-- SQLite
+SELECT *
+FROM Products
+ORDER BY id ASC LIMIT 10;
