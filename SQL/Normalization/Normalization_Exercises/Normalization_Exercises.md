@@ -50,7 +50,7 @@ fila para cada Orden, por lo tanto:
 
 ### Tabla Orders
 
-![Ejercicio Orders: Orders Table](https://github.com/JoseSolanoCordoba/DUAD/blob/8826303853cd753048193b904e7941aa3e296caa/SQL/Normalization/Normalization_Exercises/assets/OrdersTable.png)
+![Ejercicio Orders: Orders Table](https://github.com/JoseSolanoCordoba/DUAD/blob/a5b006d50006f1a6eee25cab7c94518f9b2f5267/SQL/Normalization/Normalization_Exercises/assets/OrdersTable.png)
 
 Antes de crear dicha tabla se analizó cuales elementos podría quedarse y el tipo de relación entre ellos. Por ejemplo las órdenes tienen una relación del tipo N:1 con los clientes, 
 una orden siempre va pertenecer solamente a un cliente pero, un cliente puede tener más de una orden. Entonces se colocó la Foreign Key donde está el N, o sea en la tabla Orders.
