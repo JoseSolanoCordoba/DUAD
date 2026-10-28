@@ -116,7 +116,7 @@ Se observa que un carro puede estar asegurado por más de una compañía de segu
 
 Finalmente se tiene la tabla Cars nueva:
 
-### Tabla Cars nueva
+### Tabla Cars Nueva
 ![Ejercicio Cars: Cars Table](https://github.com/JoseSolanoCordoba/DUAD/blob/18f631dd0e6221b9196af27bc072d7001d252847/SQL/Normalization/Normalization_Exercises/assets/CarsTable.png)
 
 Esta tabla tiene solamente información única, referenciando el brand_id previamente mencionado y el resto de características únicas. Mientras que los owners y las compañías de seguro,
