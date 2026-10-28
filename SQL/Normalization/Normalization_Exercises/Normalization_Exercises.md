@@ -7,7 +7,7 @@
 ## 1. Ejercicio Orders
 
 ### Tabla Original
-![Ejercicio Orders: Tabla Original](https://github.com/JoseSolanoCordoba/DUAD/blob/835d156fad4a9e1a90751512bc8dce10b0f803e0/SQL/Normalization/Normalization_Exercises/assets/OriginalTable.png)
+![Ejercicio Orders: Tabla Original](https://github.com/JoseSolanoCordoba/DUAD/blob/8826303853cd753048193b904e7941aa3e296caa/SQL/Normalization/Normalization_Exercises/assets/OriginalTable.png)
 
 ### Proceso de Normalización
 
@@ -24,11 +24,47 @@
 
 ### Tabla items
 
-![Tabla Items](https://github.com/JoseSolanoCordoba/DUAD/blob/835d156fad4a9e1a90751512bc8dce10b0f803e0/SQL/Normalization/Normalization_Exercises/assets/ItemsTable.png)
+![Ejercicio Orders: Items Table](https://github.com/JoseSolanoCordoba/DUAD/blob/8826303853cd753048193b904e7941aa3e296caa/SQL/Normalization/Normalization_Exercises/assets/ItemsTable.png)
 
+*En el caso de los customers se nota que hay algunos que tienen más de un address, por lo tanto otra vez se está repitiendo datos del mismo tipo en dichas filas incumpliendo la 1FN nuevamente, hay que eliminar esa 
+*redundancia separando el address de los customer en otra tabla.
 
+### Tabla Addresses
 
+![Ejercicio Orders: Addresses Table](https://github.com/JoseSolanoCordoba/DUAD/blob/8826303853cd753048193b904e7941aa3e296caa/SQL/Normalization/Normalization_Exercises/assets/AdressesTable.png)
 
+### Tabla Customers
+
+*Ahora, vamos a crear la tabla Customers sin relacionar con sus respectivos addreses de momento:
+![Ejercicio Orders: Customers Table](https://github.com/JoseSolanoCordoba/DUAD/blob/8826303853cd753048193b904e7941aa3e296caa/SQL/Normalization/Normalization_Exercises/assets/CustomersTable.png)
+
+*Se podría pensar que como cada address tiene solo un dueño la solución sería añadir una columna foránea en la tabla Addresses que refenciara los Customers ID pero, puede ocurrir el
+*caso en que más de una persona tenga la misma dirección entonces vemos que se trata de una relación N:N: 
+*Una persona puede tener muchas direcciones, y una dirección puede pertenecer a más de un cliente. Por lo tanto se crea una tabla cruz Customer Address para relacionar a ambas tablas:
+
+### Tabla Customer Address
+
+![Ejercicio Orders: Customers Address Table](https://github.com/JoseSolanoCordoba/DUAD/blob/8826303853cd753048193b904e7941aa3e296caa/SQL/Normalization/Normalization_Exercises/assets/CustomerAddressTable.png)
+
+*Ahora para evitar la redundancia de las ordenes se crea una tabla de Order nueva, que contenga cada primary key única y para esto se eliminan las columnas que evitarían tener solo una
+*fila para cada Orden, por lo tanto:
+
+### Tabla Orders
+
+![Ejercicio Orders: Orders Table](https://github.com/JoseSolanoCordoba/DUAD/blob/8826303853cd753048193b904e7941aa3e296caa/SQL/Normalization/Normalization_Exercises/assets/OrdersTable.png)
+
+*Antes de crear dicha tabla se analizó cuales elementos podría quedarse y el tipo de relación entre ellos. Por ejemplo las órdenes tienen una relación del tipo N:1 con los clientes, 
+*una orden siempre va pertenecer solamente a un cliente pero, un cliente puede tener más de una orden. Entonces se colocó la Foreign Key donde está el N, o sea en la tabla Orders.
+*Además el delivery time es propio y depende exclusivamente de la primary key (3FN) entonces de dejó.
+
+*Continuando con  el análisis, la relación observada entre Orders y Items es N:N, una orden puede tener varios items y un item puede estar presente en varias ordenes. Entonces se creo
+*la tabla cruz Order Item:
+
+### Tabla Order Item
+
+![Ejercicio Orders: Order Item Table](https://github.com/JoseSolanoCordoba/DUAD/blob/8826303853cd753048193b904e7941aa3e296caa/SQL/Normalization/Normalization_Exercises/assets/OrderItemTable.png)
+
+*Se mantuvo la cantidad y el special request por ser únicos a cada item.
 
 ---
 
