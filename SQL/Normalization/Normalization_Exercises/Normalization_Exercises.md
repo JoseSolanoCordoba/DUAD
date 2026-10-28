@@ -19,10 +19,11 @@ con ese Order ID) entonces, se escoge el de Order ID 001 con Item ID 101 por eje
 idenficado por la columna Item ID. Otro caso es con el customer name, phone y address que no dependen de la primary key sino más bien del cliente que haya hecho la orden.
 Por lo tanto se debe eliminar todo lo relacionado con los items y crear una tabla propia llamada Items.
 Así mismo eliminar todo lo relacionado al customer y crear una tabla propia llamada Customers.
+Así mismo eliminar todo lo relacionado al customer y crear una tabla propia llamada Customers.
 
 ### Tabla items
 
-![Ejercicio Orders: Items Table](https://github.com/JoseSolanoCordoba/DUAD/blob/8826303853cd753048193b904e7941aa3e296caa/SQL/Normalization/Normalization_Exercises/assets/ItemsTable.png)
+![Ejercicio Orders: Items Table](https://github.com/JoseSolanoCordoba/DUAD/blob/91817119f2a1df170567cfab8e2816144f9100ea/SQL/Normalization/Normalization_Exercises/assets/ItemsTable.png)
 
 En el caso de los customers se nota que hay algunos que tienen más de un address, por lo tanto otra vez se está repitiendo datos del mismo tipo en dichas filas incumpliendo la 1FN nuevamente, hay que eliminar esa 
 redundancia separando el address de los customer en otra tabla.
@@ -115,7 +116,7 @@ Se observa que un carro puede estar asegurado por más de una compañía de segu
 
 Finalmente se tiene la tabla Cars nueva:
 
-###Tabla Cars nueva
+### Tabla Cars nueva
 ![Ejercicio Cars: Cars Table](https://github.com/JoseSolanoCordoba/DUAD/blob/18f631dd0e6221b9196af27bc072d7001d252847/SQL/Normalization/Normalization_Exercises/assets/CarsTable.png)
 
 Esta tabla tiene solamente información única, referenciando el brand_id previamente mencionado y el resto de características únicas. Mientras que los owners y las compañías de seguro,
