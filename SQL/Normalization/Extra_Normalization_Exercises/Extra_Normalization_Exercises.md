@@ -93,6 +93,7 @@ Course code se separa la tabla. Se crean dos: una para estudiantes y otra para l
 |----|--------------|
 | 1  | Marco Gómez  |
 | 2  | Carla Ruiz   |
+
 Se cambió Studen ID por id, y que los números empiecen en 1 en vez de 301.
 
 *Tabla Courses 1FN*
