@@ -1,6 +1,6 @@
 -- SQLite
-SELECT Customers.id, Customers.name
-FROM Customers
+SELECT Books.id, Books.name
+FROM Books
 LEFT JOIN Rents 
-ON Customers.id = Rents.customer_id
-WHERE Rents.customer_id IS NULL
+ON Books.id = Rents.book_id
+WHERE Rents.book_id IS NULL
