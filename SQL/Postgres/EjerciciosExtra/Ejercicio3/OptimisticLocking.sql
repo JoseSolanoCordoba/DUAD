@@ -35,17 +35,18 @@ BEGIN
 	FOREACH v_product SLICE 1 IN ARRAY v_cart
 	LOOP
 	 
-	-- Verificando existencia del stock de varios productos
-        IF NOT EXISTS (
-            SELECT 1
-            FROM products
-            WHERE id = v_product[1]
-              AND stock IS NOT NULL
-              AND stock >= v_product[2]
-        ) THEN
-            RAISE EXCEPTION
-                'Stock insuficiente o producto inexistente. Abortando transacción.';
-        END IF;
+		-- Almacenando stock actual en variable
+       	SELECT stock INTO v_current_stock
+		FROM products
+		WHERE id = v_product[1];
+
+		-- Chequeando existencia de stock antes de proceder
+		IF NOT FOUND OR
+			v_current_stock IS NULL OR
+			v_current_stock < v_product[2]
+		THEN
+			RAISE EXCEPTION 'Producto inexistente o stock insuficiente';
+		END IF;
 		
 		-- Sumando los costos
 		SELECT cost INTO v_product_cost
@@ -62,7 +63,7 @@ BEGIN
 		UPDATE products AS p
 		SET stock = p.stock - v_product[2]
 		WHERE p.id = v_product[1]
-			AND stock >= v_product[2];
+			AND stock = v_current_stock;
 
 		-- Verificando si el stock cambió
 		IF NOT FOUND THEN
