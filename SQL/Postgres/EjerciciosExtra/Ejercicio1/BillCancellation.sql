@@ -2,7 +2,7 @@ set search_path TO transactions_ejercicio1;
 DO $$
 DECLARE
     -- Definimos variables para almacenar datos durante la ejecución
-	v_bill_id INTEGER := 27;
+	v_bill_id INTEGER := 8;
 	v_actual_bill_state VARCHAR(10);
 	v_delivered BOOLEAN := TRUE;
 	v_product INTEGER[];
