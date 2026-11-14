@@ -1,0 +1,2 @@
+ALTER TABLE products_bills
+ADD COLUMN delivered BOOLEAN DEFAULT TRUE;
