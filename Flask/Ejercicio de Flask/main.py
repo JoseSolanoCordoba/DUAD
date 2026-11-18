@@ -7,7 +7,10 @@ app = Flask(__name__)
 WORKING_PATH = Path.cwd()
 VALID_STATES = ("pending", "in progress", "completed")
 
-@app.route("/createtask", methods = ["POST"])
+class ItemNotFound(Exception):
+    pass
+
+@app.route("/tasks", methods = ["POST"])
 def create_task():
     try:
         tasks, file_path = open_json_file()
@@ -34,75 +37,65 @@ def create_task():
     except ValueError as vex:
         return jsonify(message = str(vex)), 400
 
-@app.route("/gettasks", methods = ["GET"])
+@app.route("/tasks", methods = ["GET"])
 def get_tasks():
     try:
         tasks, file_path = open_json_file()
-        if "state" in request.json:
-            state = request.json.get("state")
+        state = request.args.get('f')
+        if state:
+            if state not in VALID_STATES:
+                raise ValueError(f'Error: {state} is not a valid state, use {VALID_STATES} instead')
             tasks = filter_tasks(tasks, state)
             if not tasks:
-                raise ValueError("Tasks with the desire state were not found")
-        
+                raise ItemNotFound("Tasks with the desire state were not found")
+
         return jsonify(tasks), 200
     except ValueError as vex:
-        return jsonify(message = str(vex)), 404
+        return jsonify(message = str(vex)), 400
+    except ItemNotFound as iex:
+        return jsonify(message = str(iex)), 404
 
-@app.route("/updatetasks", methods = ["PATCH"])
-def update_tasks():
+@app.route("/tasks/<identifier>", methods = ["PATCH"])
+def update_tasks(identifier):
     try:
         tasks, file_path = open_json_file()
-        if "state" in request.json:
-            state = request.json.get("state")
-        else:
-            raise ValueError("state missing from the body")
-        if state not in VALID_STATES:
+        title = request.json.get("title")
+        description = request.json.get("description")
+        state = request.json.get("state")
+        if state and state not in VALID_STATES:
             raise ValueError(f'Error: {state} is not a valid state, use {VALID_STATES} instead')
-        
-        if "identifier" in request.json:
-            task_id = request.json.get("identifier")
-            tasks, item_found = patch_task(tasks, state, task_id = task_id)
-        elif "title" in request.json:
-            task_title = request.json.get("title")
-            tasks, item_found = patch_task(tasks, state, title = task_title)
-        else:
-            raise ValueError("identifier and title missing from the body")
+        if not title and not description and not state:
+            raise ValueError("Body is empty")
+        identifier = int(identifier)
+        tasks, item_found = patch_task(tasks, title, description, state, identifier)
+
         if not item_found:
-            raise ValueError("ex_id4", "Task to modify does not exist, enter a valid task id or title")
+            raise ItemNotFound("Task to modify does not exist, enter a valid task id")
         
         add_tasks_to_json_file(tasks, file_path)
         return jsonify(tasks), 200
     except ValueError as vex:
-        if vex.args[0] == "ex_id4":
-                    return jsonify(message = str(vex.args[1])), 404
         return jsonify(message = str(vex)), 400
+    except ItemNotFound as iex:
+        return jsonify(message = str(iex)), 404
 
-@app.route("/deletetasks", methods = ["DELETE"])
-def delete_tasks():
+
+@app.route("/tasks/<identifier>", methods = ["DELETE"])
+def delete_tasks(identifier):
     try:
         tasks, file_path = open_json_file()
-        if "identifier" in request.json:
-            task_id = request.json.get("identifier")
-            tasks, item_found = delete_task(tasks, task_id = task_id)
-        elif "title" in request.json:
-            task_title = request.json.get("title")
-            tasks, item_found = delete_task(tasks, title = task_title)
-        elif "state" in request.json:
-            state = request.json.get("state")
-            if state not in VALID_STATES:
-                raise ValueError(f'Error: {state} is not a valid state, use {VALID_STATES} instead')
-            tasks, item_found = delete_task(tasks, state = state)
-        else:
-            raise ValueError("identifier/title/state are missing from the body, provide one of them")
+        identifier = int(identifier)
+        tasks, item_found = delete_task(tasks, identifier)
+
         if not item_found:
-            raise ValueError("ex_id4", "Task to delete does not exist, enter a valid task")
+            raise ItemNotFound("Task to delete does not exist, enter a valid task")
         
         add_tasks_to_json_file(tasks, file_path)
         return jsonify({"tasks": tasks, "message": "Remaining tasks after deletion"}), 200
     except ValueError as vex:
-        if vex.args[0] == "ex_id4":
-                    return jsonify(message = str(vex.args[1])), 404
         return jsonify(message = str(vex)), 400
+    except ItemNotFound as iex:
+            return jsonify(message = str(iex)), 404
 
 def open_json_file():
     file_path = WORKING_PATH / "task.json"
@@ -141,34 +134,29 @@ def filter_tasks (tasks, state):
             filtered_tasks.append(task)
     return filtered_tasks
 
-def patch_task (tasks, state, task_id = None, title = ''):
+def patch_task (tasks, title, description, state, identifier):
     item_found = False
     for task in tasks:
-        if task_id and task.get("identifier") == task_id:
-            task["state"] = state
-            item_found = True
-            break
-        elif title and task.get("title") == title:
-            task["state"] = state
-            item_found = True
+        if task.get("identifier") == identifier:
+            if title:
+                task["title"] = title
+                item_found = True
+            if description:
+                task["description"] = description
+                item_found = True
+            if state:
+                task["state"] = state
+                item_found = True
             break
     return tasks, item_found
 
-def delete_task (tasks, task_id = None, title = '', state = ''):
+def delete_task (tasks, identifier):
     item_found = False
     for index, task in enumerate(tasks):
-        if task_id and task.get("identifier") == task_id:
+        if task.get("identifier") == identifier:
             del tasks[index]
             item_found = True
             break
-        elif title and task.get("title") == title:
-            del tasks[index]
-            item_found = True
-            break
-        elif state and task.get("state") == state:
-            del tasks[index]
-            item_found = True
-
     return tasks, item_found
 
 if __name__ =="__main__":
