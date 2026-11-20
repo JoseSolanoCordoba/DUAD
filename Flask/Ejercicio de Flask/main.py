@@ -14,19 +14,23 @@ class ItemNotFound(Exception):
 def create_task():
     try:
         tasks, file_path = open_json_file()
-
+        if not request.get_data():
+            raise ValueError("Request body is required")
         if "identifier" not in request.json:
             raise ValueError("identifier missing from the body")
-        if verify_identifier_existence(tasks, request.json["identifier"]):
-            raise ValueError("identifier repeated")
-
+        if isinstance(request.json["identifier"], int):
+            if verify_identifier_existence(tasks, request.json["identifier"]):
+                raise ValueError("identifier repeated")
+        else:
+            raise ValueError("Enter an identifier of integer type")
+        
         if "title" not in request.json:
             raise ValueError("title missing from the body")
-        elif not request.json.get("title"):
+        elif not request.json.get("title").strip():
             raise ValueError("title is empty/null")
         if "description" not in request.json:
             raise ValueError("description missing from the body")
-        elif not request.json.get("description"):
+        elif not request.json.get("description").strip():
             raise ValueError("description is empty/null")
         if "state" not in request.json:
             raise ValueError("state missing from the body")
@@ -50,13 +54,10 @@ def get_tasks():
                 raise ValueError(f'Error: {state} is not a valid state, use {VALID_STATES} instead')
             tasks = filter_tasks(tasks, state)
             if not tasks:
-                raise ItemNotFound
-
+                return jsonify({"tasks": tasks,"message": "There are no tasks with the provided state"}), 200
         return jsonify(tasks), 200
     except ValueError as vex:
         return jsonify(message = str(vex)), 400
-    except ItemNotFound as iex:
-        return "", 204
 
 @app.route("/tasks/<int:identifier>", methods = ["PATCH"])
 def update_tasks(identifier):
@@ -71,6 +72,8 @@ def update_tasks(identifier):
             raise ValueError("Body is empty")
         updated_task, item_found = patch_task(tasks, title, description, state, identifier)
 
+        if not updated_task:
+            raise ItemNotFound("Tasks resource is empty")
         if not item_found:
             raise ItemNotFound("Task to modify does not exist, enter a valid task id")
         
@@ -135,19 +138,22 @@ def filter_tasks (tasks, state):
 
 def patch_task (tasks, title, description, state, identifier):
     item_found = False
-    for index, task in enumerate(tasks):
-        if task.get("identifier") == identifier:
-            if title:
-                task["title"] = title
-                item_found = True
-            if description:
-                task["description"] = description
-                item_found = True
-            if state:
-                task["state"] = state
-                item_found = True
-            break
-    return tasks[index], item_found
+    if tasks:
+        for index, task in enumerate(tasks):
+            if task.get("identifier") == identifier:
+                if title:
+                    task["title"] = title
+                    item_found = True
+                if description:
+                    task["description"] = description
+                    item_found = True
+                if state:
+                    task["state"] = state
+                    item_found = True
+                break
+        return tasks[index], item_found
+    else:
+        return [], item_found
 
 def delete_task (tasks, identifier):
     item_found = False
