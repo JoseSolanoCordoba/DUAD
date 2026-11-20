@@ -22,9 +22,12 @@ def create_task():
 
         if "title" not in request.json:
             raise ValueError("title missing from the body")
+        elif not request.json.get("title"):
+            raise ValueError("title is empty/null")
         if "description" not in request.json:
             raise ValueError("description missing from the body")
-        
+        elif not request.json.get("description"):
+            raise ValueError("description is empty/null")
         if "state" not in request.json:
             raise ValueError("state missing from the body")
         state = request.json.get("state")
@@ -47,15 +50,15 @@ def get_tasks():
                 raise ValueError(f'Error: {state} is not a valid state, use {VALID_STATES} instead')
             tasks = filter_tasks(tasks, state)
             if not tasks:
-                raise ItemNotFound("Tasks with the desire state were not found")
+                raise ItemNotFound
 
         return jsonify(tasks), 200
     except ValueError as vex:
         return jsonify(message = str(vex)), 400
     except ItemNotFound as iex:
-        return jsonify(message = str(iex)), 404
+        return "", 204
 
-@app.route("/tasks/<identifier>", methods = ["PATCH"])
+@app.route("/tasks/<int:identifier>", methods = ["PATCH"])
 def update_tasks(identifier):
     try:
         tasks, file_path = open_json_file()
@@ -66,25 +69,23 @@ def update_tasks(identifier):
             raise ValueError(f'Error: {state} is not a valid state, use {VALID_STATES} instead')
         if not title and not description and not state:
             raise ValueError("Body is empty")
-        identifier = int(identifier)
-        tasks, item_found = patch_task(tasks, title, description, state, identifier)
+        updated_task, item_found = patch_task(tasks, title, description, state, identifier)
 
         if not item_found:
             raise ItemNotFound("Task to modify does not exist, enter a valid task id")
         
         add_tasks_to_json_file(tasks, file_path)
-        return jsonify(tasks), 200
+        return jsonify(updated_task), 200
     except ValueError as vex:
         return jsonify(message = str(vex)), 400
     except ItemNotFound as iex:
         return jsonify(message = str(iex)), 404
 
 
-@app.route("/tasks/<identifier>", methods = ["DELETE"])
+@app.route("/tasks/<int:identifier>", methods = ["DELETE"])
 def delete_tasks(identifier):
     try:
         tasks, file_path = open_json_file()
-        identifier = int(identifier)
         tasks, item_found = delete_task(tasks, identifier)
 
         if not item_found:
@@ -92,8 +93,6 @@ def delete_tasks(identifier):
         
         add_tasks_to_json_file(tasks, file_path)
         return jsonify({"tasks": tasks, "message": "Remaining tasks after deletion"}), 200
-    except ValueError as vex:
-        return jsonify(message = str(vex)), 400
     except ItemNotFound as iex:
             return jsonify(message = str(iex)), 404
 
@@ -136,7 +135,7 @@ def filter_tasks (tasks, state):
 
 def patch_task (tasks, title, description, state, identifier):
     item_found = False
-    for task in tasks:
+    for index, task in enumerate(tasks):
         if task.get("identifier") == identifier:
             if title:
                 task["title"] = title
@@ -148,7 +147,7 @@ def patch_task (tasks, title, description, state, identifier):
                 task["state"] = state
                 item_found = True
             break
-    return tasks, item_found
+    return tasks[index], item_found
 
 def delete_task (tasks, identifier):
     item_found = False

@@ -1,26 +1,26 @@
 [
     {
         "identifier": 1,
-        "title": "dog",
-        "description": "feed the dog",
-        "state": "completed"
-    },
-    {
-        "identifier": 2,
-        "title": "lunch",
-        "description": "feed the dog",
-        "state": "completed"
-    },
-    {
-        "identifier": 3,
         "title": "clothes",
         "description": "do the laundry",
         "state": "pending"
     },
     {
-        "identifier": 4,
+        "identifier": 2,
         "title": "lunch",
         "description": "special lunch for guests",
+        "state": "completed"
+    },
+    {
+        "identifier": 3,
+        "title": "pets",
+        "description": "feed the dog",
+        "state": "completed"
+    },
+    {
+        "identifier": 4,
+        "title": "pets",
+        "description": "feed the dog",
         "state": "completed"
     },
     {
