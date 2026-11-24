@@ -16,31 +16,39 @@ def create_task():
         tasks, file_path = open_json_file()
         if not request.get_data():
             raise ValueError("Request body is required")
-        if "identifier" not in request.json:
-            raise ValueError("identifier missing from the body")
-        if isinstance(request.json["identifier"], int):
-            if verify_identifier_existence(tasks, request.json["identifier"]):
-                raise ValueError("identifier repeated")
+        if request.get_json(silent = True):
+            if "identifier" not in request.json:
+                raise ValueError("identifier missing from the body")
+            if isinstance(request.json["identifier"], int):
+                if verify_identifier_existence(tasks, request.json["identifier"]):
+                    raise ValueError("identifier repeated")
+            else:
+                raise ValueError("Enter an identifier of integer type")
+            
+            if "title" not in request.json:
+                raise ValueError("title missing from the body")
+            elif not isinstance(request.json.get("title"), str):
+                raise ValueError("Enter only strings type for title")
+            elif not request.json.get("title").strip():
+                raise ValueError("title is empty/null")
+            
+            if "description" not in request.json:
+                raise ValueError("description missing from the body")
+            elif not isinstance(request.json.get("description"), str):
+                raise ValueError("Enter only strings type for description")
+            elif not request.json.get("description").strip():
+                raise ValueError("description is empty/null")
+            if "state" not in request.json:
+                raise ValueError("state missing from the body")
+            state = request.json.get("state")
+            if state not in VALID_STATES:
+                raise ValueError(f'Error: {state} is not a valid state, use {VALID_STATES} instead')
+            
+            add_tasks_to_json_file(tasks, file_path, request.json)
+            
+            return jsonify(request.json), 201
         else:
-            raise ValueError("Enter an identifier of integer type")
-        
-        if "title" not in request.json:
-            raise ValueError("title missing from the body")
-        elif not request.json.get("title").strip():
-            raise ValueError("title is empty/null")
-        if "description" not in request.json:
-            raise ValueError("description missing from the body")
-        elif not request.json.get("description").strip():
-            raise ValueError("description is empty/null")
-        if "state" not in request.json:
-            raise ValueError("state missing from the body")
-        state = request.json.get("state")
-        if state not in VALID_STATES:
-            raise ValueError(f'Error: {state} is not a valid state, use {VALID_STATES} instead')
-        
-        add_tasks_to_json_file(tasks, file_path, request.json)
-        
-        return jsonify(request.json), 201
+            raise ValueError("Body type must be json type only!")
     except ValueError as vex:
         return jsonify(message = str(vex)), 400
 
@@ -63,22 +71,25 @@ def get_tasks():
 def update_tasks(identifier):
     try:
         tasks, file_path = open_json_file()
-        title = request.json.get("title")
-        description = request.json.get("description")
-        state = request.json.get("state")
-        if state and state not in VALID_STATES:
-            raise ValueError(f'Error: {state} is not a valid state, use {VALID_STATES} instead')
-        if not title and not description and not state:
-            raise ValueError("Body is empty")
-        updated_task, item_found = patch_task(tasks, title, description, state, identifier)
+        if request.get_json(silent = True):
+            title = request.json.get("title")
+            description = request.json.get("description")
+            state = request.json.get("state")
+            if state and state not in VALID_STATES:
+                raise ValueError(f'Error: {state} is not a valid state, use {VALID_STATES} instead')
+            if not title and not description and not state:
+                raise ValueError("Body is empty")
+            updated_task, item_found = patch_task(tasks, title, description, state, identifier)
 
-        if not updated_task:
-            raise ItemNotFound("Tasks resource is empty")
-        if not item_found:
-            raise ItemNotFound("Task to modify does not exist, enter a valid task id")
-        
-        add_tasks_to_json_file(tasks, file_path)
-        return jsonify(updated_task), 200
+            if not updated_task:
+                raise ItemNotFound("Tasks resource is empty")
+            if not item_found:
+                raise ItemNotFound("Task to modify does not exist, enter a valid task id")
+            
+            add_tasks_to_json_file(tasks, file_path)
+            return jsonify(updated_task), 200
+        else:
+            raise ValueError("Body type must be dictionary type only!")
     except ValueError as vex:
         return jsonify(message = str(vex)), 400
     except ItemNotFound as iex:
