@@ -1,0 +1,51 @@
+brand,model,manufacturing_year,status
+Volvo,940,1994,available
+Mitsubishi,Challenger,2001,available
+Plymouth,Fury,1964,damaged
+GMC,Sonoma,2002,available
+Audi,A8,2010,available
+Acura,TL,2008,available
+Mercedes-Benz,E-Class,1984,rented
+Volkswagen,Passat,2007,available
+Ford,Econoline E350,1996,maintenance
+Nissan,Murano,2012,available
+GMC,Yukon,2004,damaged
+Subaru,Loyale,1993,rented
+Lexus,LX,1997,available
+Ford,Mustang,2006,available
+Dodge,Ram Van 2500,1995,booked
+Audi,RS 4,2008,available
+Lincoln,Town Car,1990,rented
+Ford,Ranger,2001,available
+Infiniti,QX56,2008,available
+Volkswagen,Jetta,2012,available
+Nissan,350Z,2007,damaged
+Jaguar,XK Series,1997,maintenance
+Infiniti,I,1999,rented
+Chevrolet,Suburban 1500,1993,available
+Porsche,928,1991,damaged
+Chevrolet,Cobalt,2010,available
+Toyota,Tacoma,2004,available
+Volvo,S80,2011,available
+Chevrolet,Equinox,2011,available
+Toyota,Camry,2002,available
+Chevrolet,Suburban 2500,2001,maintenance
+Ford,Ranger,1988,rented
+Chevrolet,Silverado 1500,2010,available
+Honda,Accord,1996,available
+Eagle,Talon,1992,booked
+Dodge,Grand Caravan,2003,damaged
+Subaru,Loyale,1993,rented
+Acura,Integra,1993,available
+Jeep,Wrangler,2002,available
+Ford,Fusion,2007,available
+Lincoln,Navigator L,2010,available
+Volkswagen,Cabriolet,1992,damaged
+Ford,E250,2009,available
+Mercury,Capri,1986,rented
+Lotus,Elise,2010,available
+Audi,A6,2000,available
+Infiniti,M,2009,available
+Honda,CR-V,2012,available
+Saab,9000,1997,maintenance
+Land Rover,Range Rover,1999,damaged
