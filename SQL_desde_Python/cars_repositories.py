@@ -6,8 +6,7 @@ WORKING_PATH = Path.cwd()
 class CarRepository:
     def __init__(self, db_manager):
         self.db_manager = db_manager
-        self.cars_data = self._load_csv_data()
-        self._create_and_insert_cars_table()
+        self.cars_data = []
 
     def _load_csv_data (self):
         file_path = WORKING_PATH / "cars_data.csv"
@@ -34,6 +33,7 @@ class CarRepository:
 
     def _insert_cars_rows(self):
         try:
+            self.cars_data = self._load_csv_data()
             for i in range(len(self.cars_data)):
                 row = self.cars_data[i]
                 query = "INSERT INTO lyfter_car_rental.cars (brand, model, manufacturing_year, status) VALUES (%s, %s, %s, %s);"
@@ -45,7 +45,7 @@ class CarRepository:
             print("Error inserting cars into the database: ", error)
             return False
         
-    def _create_and_insert_cars_table(self):
+    def create_and_insert_cars_table(self):
         try:
             self.db_manager.execute_query(
                 "CREATE TABLE lyfter_car_rental.cars (" \
@@ -75,9 +75,10 @@ class CarRepository:
 
     def update(self, status, id):
         try:
+            cars_tuple = (status, id)
             self.db_manager.execute_query(
-                "UPDATE lyfter_car_rental.cars SET (status) = (%s) WHERE ID = %s",
-                (status, id),
+                "UPDATE lyfter_car_rental.cars SET status = %s WHERE ID = %s",
+                *cars_tuple
             )
             print("Car updated successfully")
             return True
@@ -85,22 +86,10 @@ class CarRepository:
             print("Error updating a car from the database: ", error)
             return False
 
-    # def get_all(self):
-    #     try:
-    #         results = self.db_manager.execute_query(
-    #             "SELECT id, full_name, email, password FROM lyfter_car_rental.cars;"
-    #         )
-    #         formatted_results = [self._format_user(result) for result in results]
-    #         return formatted_results
-    #     except Exception as error:
-    #         print("Error getting all users from the database: ", error)
-    #         return False
-
-    def get_by_state(self, status):
+    def get_all(self):
         try:
             results = self.db_manager.execute_query(
-                "SELECT * FROM lyfter_car_rental.cars WHERE status = %s;",
-                (status)
+                "SELECT * FROM lyfter_car_rental.cars;"
             )
             formatted_results = [self._format_car(result) for result in results]
             return formatted_results
@@ -108,10 +97,22 @@ class CarRepository:
             print("Error getting a car from the database: ", error)
             return False
         
-    def delete(self, _id):
+    def get_by_state(self, status):
+        try:
+            results = self.db_manager.execute_query(
+                "SELECT * FROM lyfter_car_rental.cars WHERE status = %s;",
+                status
+            )
+            formatted_results = [self._format_car(result) for result in results]
+            return formatted_results
+        except Exception as error:
+            print("Error getting a car from the database: ", error)
+            return False
+        
+    def delete(self, id):
         try:
             self.db_manager.execute_query(
-                "DELETE FROM lyfter_car_rental.users WHERE id = (%s)", (_id,)
+                "DELETE FROM lyfter_car_rental.cars WHERE id = %s", id
             )
             print("User deleted successfully")
             return True
@@ -122,7 +123,7 @@ class CarRepository:
     def drop_table(self):
         try:
             self.db_manager.execute_query(
-                "DROP TABLE lyfter_car_rental.users", ()
+                "DROP TABLE lyfter_car_rental.cars", ()
             )
             print("Users Table deleted successfully")
             return True

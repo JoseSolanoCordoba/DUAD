@@ -10,13 +10,17 @@ db_manager = PgManager(
     host="localhost"
 )
 users_repo = UserRepository(db_manager)
+#users_repo.create_and_insert_users_table()
 cars_repo = CarRepository(db_manager)
-user_car_repo = UserCarRepository(db_manager)
+#cars_repo.create_and_insert_cars_table()
+user_car_repo = UserCarRepository(db_manager, users_repo, cars_repo)
+#user_car_repo.create_and_insert_user_car_table()
 
-#Ejemplo de uso de Tarea 2 punto 6:
+
+# #Ejemplo de uso de Tarea 2 punto 6:
 cars_repo.update("available", 7)
-user_car_repo.update("completed", 7, "active")
+# user_car_repo.update("completed", 7, "active")
 
-#Ejemplo Tarea 2 punto 7:
-cars_repo.update("unavailable", 8)
+# #Ejemplo Tarea 2 punto 7:
+# cars_repo.update("unavailable", 8)
 

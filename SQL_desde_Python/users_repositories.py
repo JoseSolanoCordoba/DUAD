@@ -6,8 +6,7 @@ WORKING_PATH = Path.cwd()
 class UserRepository:
     def __init__(self, db_manager):
         self.db_manager = db_manager
-        self.users_data = self._load_csv_data()
-        self._create_and_insert_users_table()
+        self.users_data = []
 
     def _load_csv_data (self):
         file_path = WORKING_PATH / "users_data.csv"
@@ -26,13 +25,17 @@ class UserRepository:
     def _format_user(self, user_record):
         return {
             "id": user_record[0],
-            "full_name": user_record[1],
+            "name": user_record[1],
             "email": user_record[2],
-            "password": user_record[3],
+            "username": user_record[3],
+            "password": user_record[4],
+            "birth_date": user_record[5],
+            "account_status": user_record[6],
         }
 
     def _insert_users_rows(self):
         try:
+            self.users_data = self._load_csv_data()
             for i in range(len(self.users_data)):
                 row = self.users_data[i]
                 query = "INSERT INTO lyfter_car_rental.users (name, email, username, password, birth_date, account_status) VALUES (%s, %s, %s, %s, %s, %s);"
@@ -44,7 +47,7 @@ class UserRepository:
             print("Error inserting users into the database: ", error)
             return False
         
-    def _create_and_insert_users_table(self):
+    def create_and_insert_users_table(self):
         try:
             self.db_manager.execute_query(
                 "CREATE TABLE lyfter_car_rental.users (" \
@@ -62,7 +65,7 @@ class UserRepository:
         except Exception as error:
             print("Error creating table: ", error)
             return False 
-
+        
     def insert_user(self, name, email, username, password, birth_date, account_status):
         try:
             query = "INSERT INTO lyfter_car_rental.users (name, email, username, password, birth_date, account_status) VALUES (%s, %s, %s, %s, %s, %s);"
@@ -76,9 +79,10 @@ class UserRepository:
         
     def update(self, account_status, id):
         try:
+            users_tuple = (account_status, id)
             self.db_manager.execute_query(
-                "UPDATE lyfter_car_rental.users SET (account_status) = (%s) WHERE ID = %s",
-                (account_status, id),
+                "UPDATE lyfter_car_rental.users SET account_status = %s WHERE ID = %s",
+                *users_tuple
             )
             print("User updated successfully")
             return True
@@ -89,7 +93,7 @@ class UserRepository:
     def get_all(self):
         try:
             results = self.db_manager.execute_query(
-                "SELECT id, full_name, email, password FROM lyfter_duad.users;"
+                "SELECT * FROM lyfter_car_rental.users;"
             )
             formatted_results = [self._format_user(result) for result in results]
             return formatted_results
@@ -97,11 +101,11 @@ class UserRepository:
             print("Error getting all users from the database: ", error)
             return False
 
-    def get_by_id(self, _id):
+    def get_by_id(self, id):
         try:
             results = self.db_manager.execute_query(
-                "SELECT id, full_name, email, password FROM lyfter_duad.users WHERE id = %s;",
-                (_id,),
+                "SELECT * FROM lyfter_car_rental.users WHERE id = %s;",
+                id
             )
             formatted_result = self._format_user(results[0])
             return formatted_result
@@ -109,10 +113,10 @@ class UserRepository:
             print("Error getting a user from the database: ", error)
             return False
         
-    def delete(self, _id):
+    def delete(self, id):
         try:
             self.db_manager.execute_query(
-                "DELETE FROM lyfter_car_rental.users WHERE id = (%s)", (_id,)
+                "DELETE FROM lyfter_car_rental.users WHERE id = %s", id
             )
             print("User deleted successfully")
             return True

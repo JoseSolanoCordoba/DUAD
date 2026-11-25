@@ -4,10 +4,11 @@ import csv
 WORKING_PATH = Path.cwd()
 
 class UserCarRepository:
-    def __init__(self, db_manager):
+    def __init__(self, db_manager, users_repo, cars_repo):
         self.db_manager = db_manager
-        self.rental_data = self._load_csv_data()
-        self._create_and_insert_user_car_table()
+        self.users_repo = users_repo
+        self.cars_repo = cars_repo
+        self.rental_data = []
 
     def _load_csv_data (self):
         file_path = WORKING_PATH / "rental_data.csv"
@@ -23,16 +24,18 @@ class UserCarRepository:
             print(f"Unexpected error: {e}")
             exit()
     
-    def _format_user(self, user_record):
+    def _format_rents(self, user_record):
         return {
             "id": user_record[0],
-            "full_name": user_record[1],
-            "email": user_record[2],
-            "password": user_record[3],
+            "user_id": user_record[1],
+            "car_id": user_record[2],
+            "rent_date": user_record[3],
+            "rent_state": user_record[4]
         }
 
     def _insert_users_cars_rows(self):
         try:
+            self.rental_data = self._load_csv_data()
             for i in range(len(self.rental_data)):
                 row = self.rental_data[i]
                 query = "INSERT INTO lyfter_car_rental.usercar (user_id, car_id, rent_state) VALUES (%s, %s, %s);"
@@ -44,7 +47,7 @@ class UserCarRepository:
             print("Error inserting rental data into the database: ", error)
             return False
         
-    def _create_and_insert_user_car_table(self):
+    def create_and_insert_user_car_table(self):
         try:
             self.db_manager.execute_query(
                 "CREATE TABLE lyfter_car_rental.usercar (" \
@@ -69,16 +72,18 @@ class UserCarRepository:
             data = (user_id, car_id, rent_state)
             self.db_manager.execute_query(query, *data)
             print("New rent inserted successfully")
+            self.cars_repo.update("rented", car_id)
             return True
         except Exception as error:
             print("Error inserting rental data into the database: ", error)
             return False
 
-    def update(self, new_rent_state, car_id, actual_rent_state):
+    def update(self, new_rent_state, rent_id):
         try:
+            rents_tuple = (new_rent_state, rent_id)
             self.db_manager.execute_query(
-                "UPDATE lyfter_car_rental.usercar SET (rent_state) = (%s) WHERE CAR_ID = %s AND RENT_STATE = (%s) ",
-                (new_rent_state, car_id, actual_rent_state),
+                "UPDATE lyfter_car_rental.usercar SET rent_state = %s WHERE ID = %s",
+                *rents_tuple
             )
             print("Car updated successfully")
             return True
@@ -89,30 +94,30 @@ class UserCarRepository:
     def get_all(self):
         try:
             results = self.db_manager.execute_query(
-                "SELECT id, full_name, email, password FROM lyfter_duad.users;"
+                "SELECT * FROM lyfter_car_rental.usercar;"
             )
-            formatted_results = [self._format_user(result) for result in results]
+            formatted_results = [self._format_rents(result) for result in results]
             return formatted_results
         except Exception as error:
             print("Error getting all users from the database: ", error)
             return False
 
-    def get_by_id(self, _id):
+    def get_by_id(self, id):
         try:
             results = self.db_manager.execute_query(
-                "SELECT id, full_name, email, password FROM lyfter_duad.users WHERE id = %s;",
-                (_id,),
+                "SELECT * FROM lyfter_car_rental.usercar WHERE id = %s;",
+                id
             )
-            formatted_result = self._format_user(results[0])
+            formatted_result = self._format_rents(results[0])
             return formatted_result
         except Exception as error:
             print("Error getting a user from the database: ", error)
             return False
         
-    def delete(self, _id):
+    def delete(self, id):
         try:
             self.db_manager.execute_query(
-                "DELETE FROM lyfter_car_rental.users WHERE id = (%s)", (_id,)
+                "DELETE FROM lyfter_car_rental.usercar WHERE id = %s", id
             )
             print("User deleted successfully")
             return True
@@ -123,7 +128,7 @@ class UserCarRepository:
     def drop_table(self):
         try:
             self.db_manager.execute_query(
-                "DROP TABLE lyfter_car_rental.users", ()
+                "DROP TABLE lyfter_car_rental.usercar", ()
             )
             print("Users Table deleted successfully")
             return True
