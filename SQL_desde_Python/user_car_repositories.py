@@ -85,7 +85,9 @@ class UserCarRepository:
                 "UPDATE lyfter_car_rental.usercar SET rent_state = %s WHERE ID = %s",
                 *rents_tuple
             )
-            print("Car updated successfully")
+            car_id = self.get_by_id(rent_id).get("car_id")
+            self.cars_repo.update("available", car_id)
+            print("Rent updated successfully")
             return True
         except Exception as error:
             print("Error updating a car from the database: ", error)
@@ -111,7 +113,7 @@ class UserCarRepository:
             formatted_result = self._format_rents(results[0])
             return formatted_result
         except Exception as error:
-            print("Error getting a user from the database: ", error)
+            print("Error getting a rent from the database: ", error)
             return False
         
     def delete(self, id):
